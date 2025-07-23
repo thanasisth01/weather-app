@@ -3,8 +3,9 @@
 /out-tsc
 /.angular
 
-# Ignore specific files by name
+# Files by name
 environment.ts
+environment.prod.ts
 
 # Node dependencies
 /node_modules

@@ -1,0 +1,10 @@
+@if (isPinned()) {
+<button (click)="onUnpinCity()">📌❌</button>
+} @else {
+<button (click)="onPinCity()">📌✅</button>
+}
+
+@if (!isPinned()) {
+<app-current [current_data]="weather_info['current']"></app-current>
+<app-week [weekly_data]="weather_info['daily']"></app-week>
+}

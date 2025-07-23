@@ -1,0 +1,9 @@
+<p>DAY {{ date | date: "EEEE dd/MM"}}</p>
+<p>{{ "Weather: " + daily_data["weather"][0]["main"] }}</p>
+<p>{{ daily_data["summary"] }}</p>
+<p>{{ "Min Temp: " + daily_data["temp"]["min"] }}</p>
+<p>{{ "Max Temp: " + daily_data["temp"]["max"] }}</p>
+<p>{{ "Humidity: " +  daily_data["humidity"] }}</p>
+<p>{{ "Probability of rain: " +  daily_data["pop"]}}</p>
+<!-- probability of rain -->
+<!-- FEELS LIKE-->

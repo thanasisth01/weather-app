@@ -1,53 +1,66 @@
 import { inject, Injectable } from '@angular/core';
-import { GetLatLonService } from './get-lat-lon.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from './environment';
-import type { OpenWeatherMapResult } from './weather.model';
+import { GeoWeatherService } from './geo-weather.service';
+
+import {
+  emptyResp,
+  type OpenWeatherMapLocationResponse,
+  type OpenWeatherMapResult,
+} from './weather.model';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SearchCityService {
-  private latlonService: GetLatLonService = inject(GetLatLonService);
-  private httpClient: HttpClient = inject(HttpClient);
+  private emptyObj: OpenWeatherMapLocationResponse = emptyResp;
+  private geoWeatherService: GeoWeatherService = inject(GeoWeatherService);
+  private lat: string = '';
+  private lon: string = '';
 
-  private city_geo: OpenWeatherMapResult = [];
-
-  searchCity(city: string) {
+  // a function that returns the weather data
+  // it receives the city that the user searched for
+  async searchCity(city: string): Promise<OpenWeatherMapLocationResponse> {
     console.log(`SearchCityService is reached. City: ${city}`);
 
-    this.getLatLongFromCity(city);
-    console.log(`Back to SearchCityService`);
-
-    // console.log(link);
-  }
-
-  async getLatLongFromCity(city: string) {
     try {
-      var res = await this.callLatLonService(city);
+      // try getting the latitude & longtitude of the city
+      var res = await this.findLatLon(city);
+
+      // if the API returned the lat & lon
       if (res && res.length > 0) {
-        console.log('Lat:', res[0].lat);
-        this.city_geo[0] = res[0];
-        // callTheSearchCityWeather
-        var link: string = `https://api.openweathermap.org/data/2.5/onecall?lat=${this.city_geo[0].lat}&lon=${this.city_geo[0].lon}&appid=${environment.apiKey}`;
-        this.httpClient.get(link).subscribe({
-          next: (resData) => {
-            console.log(resData);
-          },
-        });
+        this.lat = res[0].lat;
+        this.lon = res[0].lon;
+
+        // getting weather data from the API
+        const weatherData: OpenWeatherMapLocationResponse =
+          await this.getWeatherData();
+
+        return weatherData;
       } else {
+        // warning & returning that no results where found for that city
         console.warn('No results found for that city');
-        this.city_geo = [];
+
+        // returning an empty object
+        return this.emptyObj;
       }
-      console.log('Result:', res);
     } catch (err) {
+      // warning & returning that there was an error
+      // fetching data for that city
+      // returning an empty object
       console.error('Error fetching data:', err);
-      this.city_geo = [];
+      return this.emptyObj;
     }
   }
 
-  async callLatLonService(city: string): Promise<OpenWeatherMapResult> {
-    return await firstValueFrom(this.latlonService.getLatLon(city));
+  // finds the lat & lon of the given city
+  async findLatLon(city: string): Promise<OpenWeatherMapResult> {
+    return await firstValueFrom(this.geoWeatherService.getLatLon(city));
+  }
+
+  // gets the weather data for the given lat & lon
+  async getWeatherData(): Promise<OpenWeatherMapLocationResponse> {
+    return await firstValueFrom(
+      this.geoWeatherService.getWeatherData(this.lat, this.lon)
+    );
   }
 }

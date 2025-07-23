@@ -1,0 +1,10 @@
+<!-- which day and date (Monday 13/07) -->
+<p>{{today | date: "EEEE dd/MM"}}</p>
+
+<!-- CURRENT DAY-->
+<p>{{ "Weather: " + current_data["weather"][0]["main"] }}</p>
+<p>{{ "Min Temp: " + current_data["temp"] }}</p>
+<p>{{ "Feels Like: " + current_data["feels_like"] }}</p>
+<p>{{ "Humidity: " +  current_data["humidity"] }}</p>
+<p>Sunrise: {{current_data["sunrise"]}} Sunset: {{current_data["sunset"]}}</p>
+<!-- probability of rain -->
